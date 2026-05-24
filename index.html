@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CheckBot V5.3 FNAC DARTY (Robot, Balai, Traîneau)</title>
+<style>
+  /* ===== DESIGN INDUSTRIEL UTILITAIRE — MODE SOMBRE (DEFAULT) ===== */
+  :root {
+    /* Fonds — gris ardoise profond, neutralité atelier */
+    --bg: #0e1116;
+    --surface: #161b22;
+    --surface2: #1c222b;
+    --surface3: #232a35;
+
+    /* Bordures fonctionnelles */
+    --border: #2d343f;
+    --border2: #3d4654;
+    --border-strong: #4d5666;
+
+    /* Texte — hiérarchie haute lisibilité */
+    --text: #f0f3f7;
+    --text-secondary: #c9d1d9;
+    --text-muted: #8b949e;
+
+    /* DARTY — rouge signature (accent fonctionnel) */
+    --darty-red: #E20613;
+    --darty-red-dark: #B30410;
+    --darty-red-light: #FF3D49;
+
+    /* États sémantiques — codes ISO atelier */
+    --ok: #2ea043;
+    --ok-bg: #0d2818;
+    --ok-border: #2ea043;
+    --ok-text: #7ee2a8;
+
+    --ko: #f85149;
+    --ko-bg: #2a0d10;
+    --ko-border: #f85149;
+    --ko-text: #ffa198;
+
+    --na: #6e7681;
+    --na-bg: #1c2128;
+    --na-border: #4d5666;
+    --na-text: #c9d1d9;
+
+    --warn: #d29922;
+    --warn-bg: #2d1f06;
+    --warn-border: #d29922;
+    --warn-text: #f0c674;
+
+    --info: #2f81f7;
+    --info-bg: #0a1929;
+    --info-border: #2f81f7;
+
+    /* Ombres — relief discret */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,.5);
+
+    /* Typographie */
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+    --font-sans: -apple-system, "Segoe UI", "Inter", "Roboto", system-ui, sans-serif;
+  }
+
+  /* ===== MODE CLAIR ATELIER — LISIBILITÉ MAXIMALE ===== */
+  [data-theme="light"] {
+    --bg: #eef0f3;
+    --surface: #ffffff;
+    --surface2: #f6f8fa;
+    --surface3: #eaeef2;
+
+    --border: #d0d7de;
+    --border2: #afb8c1;
+    --border-strong: #8c959f;
+
+    --text: #0d1117;
+    --text-secondary: #24292f;
+    --text-muted: #57606a;
+
+    --darty-red: #E20613;
+    --darty-red-dark: #B30410;
+    --darty-red-light: #FF3D49;
+
+    --ok: #1a7f37;
+    --ok-bg: #dafbe1;
+    --ok-border: #1a7f37;
+    --ok-text: #0a3622;
+
+    --ko: #cf222e;
+    --ko-bg: #ffebe9;
+    --ko-border: #cf222e;
+    --ko-text: #82071e;
+
+    --na: #57606a;
+    --na-bg: #eaeef2;
+    --na-border: #8c959f;
+    --na-text: #24292f;
+
+    --warn: #9a6700;
+    --warn-bg: #fff8c5;
+    --warn-border: #9a6700;
+    --warn-text: #4d2d00;
+
+    --info: #0969da;
+    --info-bg: #ddf4ff;
+    --info-border: #0969da;
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 3px 8px rgba(0,0,0,.08);
+    --shadow-lg: 0 8px 20px rgba(0,0,0,.12);
+  }
+
+
+
+
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ===== HEADER INDUSTRIEL — BANDEAU DARTY ===== */
+  header {
+    background: var(--surface2);
+    border-bottom: 2px solid var(--darty-red);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* LOGO DARTY — PNG carré embarqué (fond transparent) */
+  .darty-logo {
+    height: 44px;
+    width: 44px;
+    display: block;
+    flex-shrink: 0;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  @media print {
+    .darty-logo { height: 38px; width: 38px; }
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--border2);
+  }
+
+  .header-title-block { display: flex; flex-direction: column; gap: 2px; }
+
+  header h1 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .version {
+    color: var(--text-muted);
+    font-size: 10px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 8px; }
+
+  /* ===== TOOLBAR ===== */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+
+  .toolbar button {
+    padding: 7px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 500;
+    transition: all .12s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+  }
+  .toolbar button:hover {
+    background: var(--surface3);
+    border-color: var(--border-strong);
+  }
+  .toolbar button:active { transform: translateY(1px); }
+
+  /* Bouton primaire (action principale = imprimer/sauvegarder) */
+  .toolbar button.btn-primary {
+    background: var(--darty-red);
+    border-color: var(--darty-red-dark);
+    color: #fff;
+    font-weight: 600;
+  }
+  .toolbar button.btn-primary:hover {
+    background: var(--darty-red-dark);
+    border-color: var(--darty-red-dark);
+  }
+
+  /* Bouton "Export to Nomad" — accent bleu industriel */
+  .toolbar button.btn-nomad {
+    background: var(--info);
+    border-color: var(--info);
+    color: #fff;
+    font-weight: 600;
+  }
+  .toolbar button.btn-nomad:hover {
+    background: #1f6feb;
+    border-color: #1f6feb;
+  }
+
+  /* Reset = destructif (rouge contour) */
+  .toolbar button.btn-reset {
+    background: transparent;
+    border-color: var(--ko);
+    color: var(--ko-text);
+    font-weight: 500;
+  }
+  .toolbar button.btn-reset:hover {
+    background: var(--ko-bg);
+    border-color: var(--ko);
+  }
+
+  /* Bouton secondaire neutre */
+  .toolbar .toolbar-spacer { flex: 1; }
+
+  /* Bouton thème header */
+  .btn-theme {
+    padding: 7px 11px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all .12s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-theme:hover { background: var(--surface3); border-color: var(--border-strong); }
+
+  /* ===== SÉLECTEUR DE FAMILLE ===== */
+  .family-selector {
+    margin: 16px 24px 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .family-btn {
+    flex: 1;
+    min-width: 180px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .family-btn:hover {
+    background: var(--surface2);
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+  .family-btn.active {
+    background: var(--surface2);
+    border-color: var(--darty-red);
+    border-left: 3px solid var(--darty-red);
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
+  .family-btn .family-icon { font-size: 18px; }
+
+  /* ===== META FORM ===== */
+  .meta-form {
+    margin: 0 24px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .meta-form label {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 5px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .meta-form input,
+  .meta-form select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-size: 13px;
+    transition: border-color .15s, box-shadow .15s;
+    font-family: var(--font-sans);
+  }
+  .meta-form input:focus,
+  .meta-form select:focus {
+    outline: none;
+    border-color: var(--darty-red);
+    box-shadow: 0 0 0 3px rgba(226, 6, 19, 0.15);
+  }
+  .meta-form input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+  /* ===== ZONE UPLOAD IMAGE ===== */
+  .image-zone {
+    margin: 0 24px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .image-zone-label {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .image-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .image-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--surface2);
+    border: 1px dashed var(--border2);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: all .15s;
+    width: fit-content;
+  }
+  .image-upload-btn:hover {
+    background: var(--surface3);
+    border-color: var(--darty-red);
+    color: var(--text);
+  }
+  .image-upload-btn input[type="file"] { display: none; }
+  .image-info {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+  .image-thumb-wrap {
+    position: relative;
+    display: none;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface2);
+    box-shadow: var(--shadow-sm);
+  }
+  .image-thumb-wrap.has-image { display: block; }
+  .image-thumb {
+    display: block;
+    max-width: 180px;
+    max-height: 180px;
+    width: auto;
+    height: auto;
+    cursor: zoom-in;
+    transition: opacity .15s;
+  }
+  .image-thumb:hover { opacity: 0.85; }
+  .image-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0,0,0,.7);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .image-remove:hover { background: var(--ko); }
+
+  /* Lightbox image */
+  .image-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.92);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    cursor: zoom-out;
+  }
+  .image-lightbox.show { display: flex; }
+  .image-lightbox img {
+    max-width: 95%;
+    max-height: 95%;
+    border-radius: 6px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ===== PROGRESS ===== */
+  .progress-wrap {
+    margin: 0 24px 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ok), #56d364);
+    transition: width .3s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    display: flex;
+    gap: 18px;
+    padding: 0 24px 14px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+  .dot-ok { background: var(--ok); border-color: var(--ok); }
+  .dot-ko { background: var(--ko); border-color: var(--ko); }
+  .dot-na { background: var(--na); border-color: var(--na); }
+
+  /* ===== SECTION ===== */
+  .section {
+    margin: 0 24px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background .12s;
+  }
+  .section-header:hover { background: var(--surface3); }
+  .section-icon {
+    font-size: 16px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    letter-spacing: -0.005em;
+  }
+  .section-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    background: var(--surface);
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .section-chevron {
+    color: var(--text-muted);
+    transition: transform .2s;
+    font-size: 10px;
+  }
+  .section.collapsed .section-chevron { transform: rotate(-90deg); }
+  .section.collapsed .section-body { display: none; }
+
+  /* ===== ITEM ===== */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    transition: background .1s;
+  }
+  .item:first-child { border-top: none; }
+  .item:hover { background: var(--surface2); }
+
+  .item-wrap { width: 100%; }
+  .item-left { flex: 1; min-width: 0; }
+  .item-label {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .item-hint {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    align-items: center;
+  }
+  .btn-state {
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11.5px;
+    font-weight: 600;
+    transition: all .12s;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+    min-width: 50px;
+  }
+  .btn-state:hover {
+    background: var(--surface2);
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+  .btn-state.active-ok {
+    background: var(--ok-bg);
+    border-color: var(--ok-border);
+    color: var(--ok-text);
+    box-shadow: inset 0 0 0 1px var(--ok-border);
+  }
+  .btn-state.active-ko {
+    background: var(--ko-bg);
+    border-color: var(--ko-border);
+    color: var(--ko-text);
+    box-shadow: inset 0 0 0 1px var(--ko-border);
+  }
+  .btn-state.active-na {
+    background: var(--na-bg);
+    border-color: var(--na-border);
+    color: var(--na-text);
+    box-shadow: inset 0 0 0 1px var(--na-border);
+  }
+
+  .item-note {
+    display: none;
+    margin-top: 8px;
+  }
+  .item-note.show { display: block; }
+  .item-note input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--ko-border);
+    border-radius: 5px;
+    padding: 7px 11px;
+    font-size: 12.5px;
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
+  .item-note input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.15);
+  }
+  .item-note input::placeholder { color: var(--text-muted); }
+
+  /* ===== STATS ===== */
+  .stats-wrap {
+    margin: 14px 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--border2);
+  }
+  .stat-card.ok::before { background: var(--ok); }
+  .stat-card.ko::before { background: var(--ko); }
+  .stat-card.na::before { background: var(--na); }
+
+  .stat-label {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    line-height: 1;
+  }
+  .stat-ok { color: var(--ok-text); }
+  .stat-ko { color: var(--ko-text); }
+  .stat-na { color: var(--na-text); }
+
+  /* ===== CONCLUSION ===== */
+  .conclusion {
+    margin: 0 24px 16px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: center;
+    border-left: 3px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .conclusion.ok    { background: var(--ok-bg);   color: var(--ok-text);   border-color: var(--ok-border); }
+  .conclusion.ko    { background: var(--ko-bg);   color: var(--ko-text);   border-color: var(--ko-border); }
+  .conclusion.partial { background: var(--warn-bg); color: var(--warn-text); border-color: var(--warn-border); }
+  .conclusion.empty { background: var(--surface); color: var(--text-muted); border-color: var(--border2); }
+
+  /* ===== BACK TO TOP ===== */
+  .back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--darty-red);
+    color: #fff;
+    border: 2px solid var(--darty-red-dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    transition: all .2s ease;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    z-index: 1000;
+    line-height: 1;
+  }
+  .back-to-top.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .back-to-top:hover {
+    background: var(--darty-red-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(226, 6, 19, 0.4);
+  }
+  .back-to-top:active { transform: translateY(0); }
+
+  /* ===== IMPRESSION (PDF) ===== */
+  @media print {
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+    body {
+      background: white !important;
+      color: black !important;
+      font-size: 11pt;
+    }
+    header {
+      position: static !important;
+      border-bottom: 2px solid #E20613 !important;
+      background: white !important;
+      padding: 8px 0 !important;
+      page-break-after: avoid;
+    }
+    header h1, .version { color: black !important; }
+    .toolbar,
+    .family-selector,
+    .back-to-top,
+    .btn-theme,
+    .image-upload-btn,
+    .image-remove,
+    #qrManager { display: none !important; }
+
+    .section, .meta-form, .stats-wrap, .conclusion, .progress-wrap, .legend, .image-zone {
+      page-break-inside: avoid;
+      box-shadow: none !important;
+    }
+    .section { border: 1px solid #999 !important; }
+    .section-header { background: #f0f0f0 !important; }
+    .section-title, .item-label { color: black !important; }
+    .item-hint, .stat-label, .meta-form label, .progress-label, .legend-item { color: #444 !important; }
+    .meta-form input,
+    .meta-form select {
+      background: white !important;
+      color: black !important;
+      border: 1px solid #999 !important;
+    }
+    .btn-state { display: none; }
+    /* Marqueurs textuels d'état pour le PDF */
+    .item-state-print {
+      display: inline-block !important;
+      font-family: monospace;
+      font-weight: 700;
+      padding: 2px 8px;
+      border: 1.5px solid;
+      border-radius: 3px;
+      font-size: 10pt;
+    }
+    .item-state-print.ok { color: #0a3622; border-color: #1a7f37; background: #dafbe1; }
+    .item-state-print.ko { color: #82071e; border-color: #cf222e; background: #ffebe9; }
+    .item-state-print.na { color: #24292f; border-color: #57606a; background: #eaeef2; }
+
+    .image-thumb {
+      max-width: 280px !important;
+      max-height: 280px !important;
+    }
+    .image-thumb-wrap { display: inline-block !important; }
+  }
+  /* En mode écran on cache les marqueurs print */
+  .item-state-print { display: none; }
+
+  .hidden { display: none; }
+  /* Préservation du nom de marque pour exports et tests */
+  .title-inspection { color: var(--text); }
+  [data-theme="light"] .title-inspection { color: var(--text); }
+
+</style>
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <!-- Logo DARTY (PNG embarqué en base64, fond transparent) -->
+    <img class="darty-logo" src="data:image/png;base64,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q9UpJSAHMg899NA4Cc/Bzp577slhhx0GwFFHHcX8+fNpNptdmxiGIWvWrOlGiqaTthywfeITn+giX+9911Q0m01KpRKXXnppF62PBXwTff2xceOdEeXwww/f4fvtdpulS5dy4IEHTnaPpkBaksSA4sVgcExVxxNMrd19Jr0i2DhG282uTZ4ItGSWG87GOvtTEfn++++fMpggIlx99dV470mShCiKur51jkrXr1/PU089xYoVK3Y6joGBAVS1qwbzmHZvby+f+cxnOOyww7pMOXa8uaszFdPsLDf8ghe8YEpvYyzAWrlyZVcIprW/kp3HYRqNjgAbhHRKTzaYkjcEAgfOCMQx2tjp/UszzraM9V/HSkGxWKRWq/Hggw+OAzy5PXziiSe44IILupPu6ekZxwh5+O/hhx9mxYoVOwV8Y1VqDm5OOukkrrjiCvbdd99xmmBiKHMqycoJP536zZMy8+fPZ+vWrZMAYG5/c2A3lrkmSaCATxJoNMEKgdfZ2WDtFImoAdNK0KHRaUPR+SB3lpLLJznWLRi72L29vWzdupXHH398UgYpV5/z589nYGCAgYGBSYuc+9N5fNd7P07VT1W9MXEMIjIlcfM5ttvtbgh1LHFyFD8V8441Ff39/SxevHjKceWf2XfffWemChstZLiOWunUycns3CQvSmqzeqxk05Zpkw35QHekonIV2Gq12LZt27jFyzl3wYIFrF27dtL7E8tnxgYRpvKnf/3rX3f/nm4hkyQZ14f3np6eHq677jquvvpqgiCY8hmtVotGozElc7VarSnV98TChOkInDPx0qVLZ5ZzHh5GRkbxgcmySTJDN0kBUZMBLSOgnsZTT+wgGLZ98tO5EPnCbtq0ic2bN08KYiRJwvLly3nggQemRZnWWoIg6P5MlbwoFArcd999XVdkIlrPn7V48WL6+/snxYf7+vr45Cc/yZYtW6acS6vV6s5zIshqNpu02+2dmrBFixZNyTx5EmTBggU7dTcBWps34eoNxER4k3Tva9ppLDo7czL7KSfZrkKzppOK24G/NZXqnTiwu+66qyuhE23wnnvuyX333TclwMrTe3k4cvPmzZNCiznQWrduHY8++mjXro4lVB46Pfzww3nPe97TTUmOxQFr167lyiuvHBef7i5qR0qnkuB2u02r1dqp5PX390/rm0dRRG9v745NXV7Os+5J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" alt="DARTY" />
+
+    <div class="header-divider"></div>
+
+    <div class="header-title-block">
+      <h1 class="title-inspection">CheckBot V5.3 — Diagnostic Aspirateurs</h1>
+      <div class="version">MULTI-FAMILLES · ROBOT / BALAI / TRAÎNEAU · M.TAHRI ©</div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <button id="themeToggle" class="btn-theme" type="button">
+      ☀️ Mode clair
+    </button>
+  </div>
+</header>
+
+<div class="family-selector">
+  <button class="family-btn active" onclick="switchFamily('robot', this)">
+    <span class="family-icon">🤖</span><span>Robot aspirateur</span>
+  </button>
+  <button class="family-btn" onclick="switchFamily('balai', this)">
+    <span class="family-icon">🧹</span><span>Balai</span>
+  </button>
+  <button class="family-btn" onclick="switchFamily('traineau', this)">
+    <span class="family-icon">🚂</span><span>Traîneau</span>
+  </button>
+</div>
+<div class="toolbar">
+  <button class="btn-primary" onclick="window.print()" title="Imprimer ou sauvegarder en PDF">
+    🖨️ Imprimer / Sauvegarder PDF
+  </button>
+
+  <button class="btn-nomad" onclick="exportToNomad()" title="Génère un PDF et ouvre Nomad">
+    📤 Export to Nomad
+  </button>
+
+  <button onclick="exportHTML()" title="Exporter ce fichier HTML avec ses paramètres">
+    💾 Exporter HTML
+  </button>
+
+  <div class="toolbar-spacer"></div>
+
+  <button onclick="expandAll()">📂 Tout déplier</button>
+  <button onclick="collapseAll()">📁 Tout replier</button>
+  <button onclick="checkAll('ok')">✓ Tout OK</button>
+
+  <button onclick="openQrManager()" title="Édition des points de contrôle (admin)">
+    ⚙️ Paramètres
+  </button>
+
+  <button class="btn-reset" onclick="resetAll()">🔄 Réinitialiser</button>
+</div>
+
+<div class="meta-form">
+  <div><label>Modèle</label><input type="text" id="model-input" placeholder="Ex: Dyson V15 Detect"/></div>
+  <div><label>N° série</label><input type="text" id="serial-input" placeholder="Ex: ABC123456"/></div>
+  <div><label>Technicien</label><input type="text" id="tech-input" placeholder="Nom du technicien"/></div>
+  <div><label>Date</label><input type="date" id="date-input"/></div>
+</div>
+
+<!-- ZONE IMAGE DIAGNOSTIC -->
+<div class="image-zone">
+  <div class="image-controls">
+    <label class="image-zone-label">📷 Photo du diagnostic</label>
+    <label class="image-upload-btn" for="image-input">
+      ➕ Ajouter une image
+      <input type="file" id="image-input" accept="image/*" onchange="handleImageUpload(event)"/>
+    </label>
+    <div class="image-info" id="image-info">Aucune image — formats JPG, PNG, WebP (max ~10 Mo)</div>
+  </div>
+  <div class="image-thumb-wrap" id="image-thumb-wrap">
+    <img class="image-thumb" id="image-thumb" alt="Aperçu diagnostic" onclick="openLightbox()"/>
+    <button class="image-remove" onclick="removeImage()" title="Retirer l'image" type="button">✕</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="image-lightbox" id="image-lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" alt="Vue agrandie"/>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+  <div class="progress-label" id="progress-label">0 / 0 contrôles effectués (0%)</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="dot dot-ok"></div><span>OK</span></div>
+  <div class="legend-item"><div class="dot dot-ko"></div><span>KO (défaut)</span></div>
+  <div class="legend-item"><div class="dot dot-na"></div><span>N/A (non applicable)</span></div>
+</div>
+
+<div class="stats-wrap">
+  <div class="stat-card ok"><div class="stat-label">Contrôles OK</div><div class="stat-value stat-ok" id="stat-ok">0</div></div>
+  <div class="stat-card ko"><div class="stat-label">Défauts détectés</div><div class="stat-value stat-ko" id="stat-ko">0</div></div>
+  <div class="stat-card na"><div class="stat-label">Non applicables</div><div class="stat-value stat-na" id="stat-na">0</div></div>
+</div>
+
+<div class="conclusion empty" id="conclusion">Aucun contrôle effectué</div>
+
+<!-- ROBOT ASPIRATEUR -->
+<div id="family-robot">
+  <div class="section" id="s-aspect">
+    <div class="section-header" onclick="toggleSection('s-aspect')">
+      <span class="section-icon">🔍</span>
+      <span class="section-title">Aspect physique</span>
+      <span class="section-count" id="count-s-aspect">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="s-aspiration">
+    <div class="section-header" onclick="toggleSection('s-aspiration')">
+      <span class="section-icon">🌪️</span>
+      <span class="section-title">Aspiration & Filtration</span>
+      <span class="section-count" id="count-s-aspiration">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="s-lavage">
+    <div class="section-header" onclick="toggleSection('s-lavage')">
+      <span class="section-icon">💧</span>
+      <span class="section-title">Système de Lavage</span>
+      <span class="section-count" id="count-s-lavage">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="s-navigation">
+    <div class="section-header" onclick="toggleSection('s-navigation')">
+      <span class="section-icon">🗺️</span>
+      <span class="section-title">Navigation & Capteurs</span>
+      <span class="section-count" id="count-s-navigation">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="s-motorisation">
+    <div class="section-header" onclick="toggleSection('s-motorisation')">
+      <span class="section-icon">⚙️</span>
+      <span class="section-title">Motorisation</span>
+      <span class="section-count" id="count-s-motorisation">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="s-batterie">
+    <div class="section-header" onclick="toggleSection('s-batterie')">
+      <span class="section-icon">🔋</span>
+      <span class="section-title">Batterie & Charge</span>
+      <span class="section-count" id="count-s-batterie">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="s-connectique">
+    <div class="section-header" onclick="toggleSection('s-connectique')">
+      <span class="section-icon">🔌</span>
+      <span class="section-title">Connectique & Harnais</span>
+      <span class="section-count" id="count-s-connectique">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="s-station">
+    <div class="section-header" onclick="toggleSection('s-station')">
+      <span class="section-icon">🏠</span>
+      <span class="section-title">Station d'accueil</span>
+      <span class="section-count" id="count-s-station">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+</div>
+
+<!-- BALAI -->
+<div id="family-balai" class="hidden">
+  <div class="section" id="b-structure">
+    <div class="section-header" onclick="toggleSection('b-structure')">
+      <span class="section-icon">🔧</span>
+      <span class="section-title">Structure & Corps</span>
+      <span class="section-count" id="count-b-structure">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="b-aspiration">
+    <div class="section-header" onclick="toggleSection('b-aspiration')">
+      <span class="section-icon">🌪️</span>
+      <span class="section-title">Aspiration & Filtration</span>
+      <span class="section-count" id="count-b-aspiration">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="b-brosse">
+    <div class="section-header" onclick="toggleSection('b-brosse')">
+      <span class="section-icon">🧹</span>
+      <span class="section-title">Brosse & Accessoires</span>
+      <span class="section-count" id="count-b-brosse">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="b-batterie">
+    <div class="section-header" onclick="toggleSection('b-batterie')">
+      <span class="section-icon">🔋</span>
+      <span class="section-title">Batterie & Charge</span>
+      <span class="section-count" id="count-b-batterie">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="b-electrique">
+    <div class="section-header" onclick="toggleSection('b-electrique')">
+      <span class="section-icon">⚡</span>
+      <span class="section-title">Système Électrique</span>
+      <span class="section-count" id="count-b-electrique">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+</div>
+
+<!-- TRAINEAU -->
+<div id="family-traineau" class="hidden">
+  <div class="section" id="t-corps">
+    <div class="section-header" onclick="toggleSection('t-corps')">
+      <span class="section-icon">🏠</span>
+      <span class="section-title">Corps & Châssis</span>
+      <span class="section-count" id="count-t-corps">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="t-aspiration">
+    <div class="section-header" onclick="toggleSection('t-aspiration')">
+      <span class="section-icon">🌪️</span>
+      <span class="section-title">Système d'Aspiration</span>
+      <span class="section-count" id="count-t-aspiration">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="t-filtration">
+    <div class="section-header" onclick="toggleSection('t-filtration')">
+      <span class="section-icon">🫧</span>
+      <span class="section-title">Filtration</span>
+      <span class="section-count" id="count-t-filtration">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="t-flexible">
+    <div class="section-header" onclick="toggleSection('t-flexible')">
+      <span class="section-icon">〰️</span>
+      <span class="section-title">Flexible & Tube</span>
+      <span class="section-count" id="count-t-flexible">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="t-brosses">
+    <div class="section-header" onclick="toggleSection('t-brosses')">
+      <span class="section-icon">🧹</span>
+      <span class="section-title">Brosses & Suceurs</span>
+      <span class="section-count" id="count-t-brosses">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="t-electrique">
+    <div class="section-header" onclick="toggleSection('t-electrique')">
+      <span class="section-icon">⚡</span>
+      <span class="section-title">Système Électrique</span>
+      <span class="section-count" id="count-t-electrique">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+
+  <div class="section" id="t-roues">
+    <div class="section-header" onclick="toggleSection('t-roues')">
+      <span class="section-icon">🛞</span>
+      <span class="section-title">Roues & Mobilité</span>
+      <span class="section-count" id="count-t-roues">0/0</span>
+      <span class="section-chevron">▼</span>
+    </div>
+    <div class="section-body"></div>
+  </div>
+</div>
+
+
+<!-- GESTION QR CODES -->
+<div id="qrManager"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:9999;align-items:center;justify-content:center;padding:20px;">
+
+  <div style="background:var(--surface2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    width:100%;
+    max-width:900px;
+    max-height:90vh;
+    overflow:auto;
+    padding:20px;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="font-size:22px;color:var(--text);">⚙️ Paramétrages</h2>
+
+      <button onclick="closeQrManager()"
+        style="padding:8px 14px;border:none;border-radius:8px;
+        background:#991b1b;color:white;cursor:pointer;">
+        ✖ Fermer
+      </button>
+    </div>
+
+    <div id="qrManagerContent"></div>
+  </div>
+</div>
+
+<!-- BOUTON BACK TO TOP -->
+<button id="backToTop" class="back-to-top" onclick="scrollToTop()" aria-label="Retour en haut de page" title="Retour en haut">
+  ↑
+</button>
+
+<script>
+// ===== SECTIONS DATA =====
+const SECTIONS = {
+  // ROBOT ASPIRATEUR
+  's-aspect': {
+    title: 'Aspect physique', icon: '🔍', family: 'robot',
+    items: [
+      { label: 'Coque supérieure', hint: 'Aucune fissure, aucun choc, pas de rayure profonde, clips et capots en place' },
+      { label: 'Châssis / coque inférieure', hint: 'Aucune déformation, vis présentes, aucun élément cassé' },
+      { label: 'Pare-chocs avant', hint: 'Course libre, retour ressort correct, aucune fissure, mousse de protection intacte' },
+      { label: 'Capot supérieur / trappe bac', hint: 'Charnière fonctionnelle, fermeture correcte, aimant ou clip en place' },
+      { label: 'Boutons / touches de commande', hint: 'Course franche, aucun bouton enfoncé ou bloqué, sérigraphie lisible' },
+      { label: 'État général / propreté', hint: 'Aucune trace de liquide, pas de poussière incrustée anormale, pas d\'odeur suspecte' },
+    ]
+  },
+  's-aspiration': {
+    title: 'Aspiration & Filtration', icon: '🌪️', family: 'robot',
+    items: [
+      { label: 'Bac à poussière', hint: 'Propre, filtre HEPA présent et non saturé, joint de bac intègre' },
+      { label: 'Filtre HEPA', hint: 'État du filtre : non perforé, non obstrué, non humide' },
+      { label: 'Brosse principale (centrale)', hint: 'Poils non coupés/enroulés, paliers libres, flaps de brosses intacts' },
+      { label: 'Brosse(s) latérale(s)', hint: 'Bras de brosse non cassé, fixation correcte, poils non tordus' },
+      { label: 'Conduit d\'aspiration', hint: 'Aucune obstruction, aucun corps étranger coincé' },
+      { label: 'Bouche d\'aspiration / tamis', hint: 'Grille non bouchée, aucun fil ni cheveux emmêlés' },
+      { label: 'Moquette en caoutchouc (brosse anti-enchevêtrement)', hint: 'Si modèle équipé : lamelles intactes, axe tournant librement' },
+    ]
+  },
+  's-lavage': {
+    title: 'Système de Lavage', icon: '💧', family: 'robot',
+    items: [
+      { label: 'Réservoir d\'eau propre', hint: 'Aucune fuite, bouchon présent et étanche, flotteur libre' },
+      { label: 'Valve d\'alimentation / pompe eau', hint: 'Aucun dépôt calcaire bloquant, membrane souple' },
+      { label: 'Serpillère / pad de lavage', hint: 'État du textile, fixation Velcro ou clip correcte' },
+      { label: 'Module de lavage (support serpillère)', hint: 'Aucun jeu excessif, pas de déformation, fixation correcte' },
+      { label: 'Serpillère rotative (si modèle Dual/Max)', hint: 'Rotation libre à la main, pas d\'obstruction ni de fil coincé' },
+      { label: 'Module soulèvement serpillère (si équipé)', hint: 'Mécanisme de levée fonctionnel à la main, aucun blocage' },
+      { label: 'Bac eaux usées / collecte (station auto)', hint: 'Propre, aucun dépôt, système de vidange intègre' },
+      { label: 'Joints du circuit hydraulique', hint: 'Aucune trace d\'humidité sur PCB, aucune fuite résiduelle' },
+    ]
+  },
+  's-navigation': {
+    title: 'Navigation & Capteurs', icon: '🗺️', family: 'robot',
+    items: [
+      { label: 'Tourelle LiDAR', hint: 'Rotation libre à la main, fenêtre propre et non rayée, aucun jeu dans la base' },
+      { label: 'Capteurs anti-chute (falaise)', hint: 'Lentilles propres, aucune obstruction, nombre correct (min 4)' },
+      { label: 'Capteurs de paroi / mur (si équipés)', hint: 'Fenêtre propre, aucune fissure' },
+      { label: 'Capteur IR pare-chocs', hint: 'Nappe branchée, lentille propre' },
+      { label: 'Capteur 3D / caméra ToF (si équipé)', hint: 'Fenêtre propre, aucune obstruction, aucun impact' },
+      { label: 'Caméra RGB / de navigation (si équipée)', hint: 'Objectif propre, aucun dépôt, pas de condensation' },
+      { label: 'Capteur de détection tapis', hint: 'Zone de lecture propre, aucun autocollant collé dessus' },
+    ]
+  },
+  's-motorisation': {
+    title: 'Motorisation', icon: '⚙️', family: 'robot',
+    items: [
+      { label: 'Roues motrices (gauche/droite)', hint: 'Suspension présente, retour ressort correct, pneumatique non lisse ni fissuré' },
+      { label: 'Rotation roues motrices', hint: 'Rotation libre sans accroc, aucun craquement, aucun corps étranger coincé' },
+      { label: 'Roue folle avant / arrière', hint: 'Rotation libre 360°, propre, roulement non usé' },
+      { label: 'Moteur d\'aspiration', hint: 'Aucun bruit anormal à la main, turbine libre de rotation' },
+      { label: 'Moteur de la brosse principale', hint: 'Axe tourne librement, aucun enroulement de cheveux sur l\'axe moteur' },
+      { label: 'Moteur(s) de la brosse latérale', hint: 'Aucun fil coincé, rotation libre' },
+      { label: 'Moteur(s) serpillère rotative (si équipé)', hint: 'Axe libre, pas de résidu solide bloquant la rotation' },
+    ]
+  },
+  's-batterie': {
+    title: 'Batterie & Charge', icon: '🔋', family: 'robot',
+    items: [
+      { label: 'Contacts de charge robot', hint: 'Propres, non oxydés, non déformés, dorure intacte' },
+      { label: 'Batterie (aspect extérieur)', hint: 'Aucun gonflement, aucune trace de surchauffe, fixations correctes' },
+      { label: 'Connecteur batterie / carte mère', hint: 'Nappe correctement clipsée, aucune brûlure sur le connecteur' },
+      { label: 'Indicateur de charge (LED)', hint: 'LED visible, non cassée (vérification à l\'allumage)' },
+    ]
+  },
+  's-connectique': {
+    title: 'Connectique & Harnais', icon: '🔌', family: 'robot',
+    items: [
+      { label: 'Harnais pare-chocs', hint: 'Nappe connectée aux deux extrémités, aucun pli ou pincement' },
+      { label: 'Harnais LiDAR', hint: 'Nappe non arrachée, connecteur clipsé, aucune torsion' },
+      { label: 'Harnais brosse principale', hint: 'Connecteur emboîté, fils non sectionnés' },
+      { label: 'Harnais capteurs de falaise', hint: 'Toutes nappes branchées, aucun fil apparent coupé' },
+      { label: 'Harnais module de lavage', hint: 'Connecteur d\'alimentation pompe branché, aucun kink' },
+      { label: 'Connecteur batterie', hint: 'Aucune oxydation, pas de déformation des picots' },
+      { label: 'Nappe carte mère principale', hint: 'Aucune trace de corrosion, connecteurs FPC clipsés et non arrachés' },
+    ]
+  },
+  's-station': {
+    title: 'Station d\'accueil', icon: '🏠', family: 'robot',
+    items: [
+      { label: 'Contacts de charge station (plots)', hint: 'Propres, non oxydés, ressort de contact présent et fonctionnel' },
+      { label: 'Capteur IR de guidage dock', hint: 'Fenêtre propre, aucune obstruction physique' },
+      { label: 'Bac à poussière auto-vidage (si équipé)', hint: 'Sac présent, non plein, joint de bac intègre' },
+      { label: 'Réservoir eau propre station', hint: 'Aucune fuite, filtre présent, joint de bouchon intègre' },
+      { label: 'Réservoir eaux usées station', hint: 'Non plein, aucune fuite, bouchon en place' },
+      { label: 'Système de lavage des serpillères station', hint: 'Rouleaux libres, aucun débris, plateau propre' },
+      { label: 'Alimentation secteur / câble', hint: 'Câble non endommagé, fiche non brûlée, adaptateur intact' },
+      { label: 'Socle et chassis / positionnement station', hint: 'Station stable, pas de déformation du socle ,pas de rayures ou chocs, tapis en place si prévu' },
+    ]
+  },
+
+  // BALAI
+  'b-structure': {
+    title: 'Structure & Corps', icon: '🔧', family: 'balai',
+    items: [
+      { label: 'Tube télescopique / manche', hint: 'Aucune fissure, verrouillage fonctionnel, pas de jeu excessif' },
+      { label: 'Poignée ergonomique', hint: 'Revêtement non décollé, boutons de commande fonctionnels' },
+      { label: 'Corps moteur principal', hint: 'Aucune fissure, grilles d\'aération dégagées, pas de choc visible' },
+      { label: 'Système de verrouillage / fixation', hint: 'Clips de fixation batterie et accessoires fonctionnels' },
+      { label: 'Joint d\'étanchéité bac/corps', hint: 'Joint souple, non déchiré, bonne étanchéité' },
+    ]
+  },
+  'b-aspiration': {
+    title: 'Aspiration & Filtration', icon: '🌪️', family: 'balai',
+    items: [
+      { label: 'Bac à poussière amovible', hint: 'Vidange facile, système de clippage fonctionnel, transparent non opaque' },
+      { label: 'Filtre pré-moteur', hint: 'Propre, non saturé, correctement positionné' },
+      { label: 'Filtre HEPA post-moteur', hint: 'Présent, non perforé, non obstrué' },
+      { label: 'Cyclone(s)', hint: 'Aucun corps étranger bloquant, parois propres' },
+      { label: 'Conduit d\'aspiration principal', hint: 'Aucune obstruction, aucune fissure' },
+      { label: 'Clapet anti-retour (si équipé)', hint: 'Mouvement libre, pas de blocage' },
+    ]
+  },
+  'b-brosse': {
+    title: 'Brosse & Accessoires', icon: '🧹', family: 'balai',
+    items: [
+      { label: 'Tête motorisée / brosse rotative', hint: 'Rotation libre, poils intacts, pas d\'enchevêtrement' },
+      { label: 'Courroie d\'entraînement brosse', hint: 'Tension correcte, aucune usure excessive, pas de glissement' },
+      { label: 'Rouleaux de brosse', hint: 'Pas de cheveux enroulés, roulement libre' },
+      { label: 'Patins / glissières tête brosse', hint: 'Non usés, permettent un glissement fluide' },
+      { label: 'Articulation tête motorisée', hint: 'Mouvement fluide multi-directionnel, pas de jeu excessif' },
+      { label: 'Mini-turbine / mini-brosse (accessoire)', hint: 'Rotation libre, fixation correcte' },
+      { label: 'Suceur long / accessoire fentes', hint: 'Aucune fissure, diamètre compatible' },
+      { label: 'Brosse douce / meuble', hint: 'Poils intacts, fixation sur l\'embout correcte' },
+    ]
+  },
+  'b-batterie': {
+    title: 'Batterie & Charge', icon: '🔋', family: 'balai',
+    items: [
+      { label: 'Batterie amovible (pack)', hint: 'Aucun gonflement, pas de trace de choc, fixation sécurisée' },
+      { label: 'Contacts batterie / appareil', hint: 'Propres, non oxydés, bonne connexion électrique' },
+      { label: 'Indicateur LED batterie', hint: 'Fonctionnel, niveau visible' },
+      { label: 'Chargeur secteur / dock', hint: 'Câble intact, fiche non brûlée, charge effective' },
+      { label: 'Autonomie / performance charge', hint: 'Temps de charge conforme, autonomie acceptable pour l\'âge' },
+    ]
+  },
+  'b-electrique': {
+    title: 'Système Électrique', icon: '⚡', family: 'balai',
+    items: [
+      { label: 'Moteur numérique / turbine', hint: 'Aucun bruit anormal, ventilation correcte' },
+      { label: 'Gâchette / interrupteur marche', hint: 'Réponse franche, pas de faux contact' },
+      { label: 'Sélecteur de puissance / modes', hint: 'Changement de mode effectif, boutons réactifs' },
+      { label: 'Écran LCD / affichage (si équipé)', hint: 'Lisible, aucune fissure, info correcte' },
+      { label: 'Câblage interne apparent', hint: 'Aucun fil dénudé, pas de trace de surchauffe' },
+    ]
+  },
+
+  // TRAINEAU
+  't-corps': {
+    title: 'Corps & Châssis', icon: '🏠', family: 'traineau',
+    items: [
+      { label: 'Coque extérieure', hint: 'Aucune fissure majeure, pas de déformation' },
+      { label: 'Capot supérieur / ouverture bac', hint: 'Charnière fonctionnelle, fermeture étanche' },
+      { label: 'Poignée de transport', hint: 'Solide, non cassée, confortable' },
+      { label: 'Variateur de puissance', hint: 'Curseur fluide ou boutons fonctionnels, gamme complète' },
+      { label: 'Enrouleur de câble', hint: 'Enroulement correct, câble non emmêlé, mécanisme non cassé' },
+    ]
+  },
+  't-aspiration': {
+    title: 'Système d\'Aspiration', icon: '🌪️', family: 'traineau',
+    items: [
+      { label: 'Moteur principal', hint: 'Aucun bruit anormal, pas de surchauffe excessive, ventilation correcte' },
+      { label: 'Turbine moteur', hint: 'Rotation libre (moteur éteint), pales intactes' },
+      { label: 'Sac à poussière (si sac)', hint: 'Sac en place, non plein, pas de fuite de poussière' },
+      { label: 'Bac collecteur (si sans sac)', hint: 'Vidange facile, joint étanche, aucune fissure' },
+      { label: 'Variateur aspiration / réglage débit', hint: 'Changement de puissance effectif, curseur non bloqué' },
+      { label: 'Joints d\'étanchéité circuit air', hint: 'Aucune prise d\'air parasite, perte de puissance' },
+    ]
+  },
+  't-filtration': {
+    title: 'Filtration', icon: '🫧', family: 'traineau',
+    items: [
+      { label: 'Filtre moteur (pré-moteur)', hint: 'Propre, non saturé, bonne étanchéité' },
+      { label: 'Filtre HEPA / EPA sortie air', hint: 'Présent, non obstrué, pas de perforation' },
+      { label: 'Cassette filtrante / mousse', hint: 'Non déformée, propre, correctement positionnée' },
+      { label: 'Grille de sortie d\'air', hint: 'Non bouchée, expulsion d\'air correcte' },
+    ]
+  },
+  't-flexible': {
+    title: 'Flexible & Tube', icon: '〰️', family: 'traineau',
+    items: [
+      { label: 'Flexible d\'aspiration', hint: 'Aucun trou, ni craquelure, souplesse conservée' },
+      { label: 'Embout entrée flexible (appareil)', hint: 'Connexion étanche, système de verrouillage fonctionnel' },
+      { label: 'Poignée flexible / commandes', hint: 'Interrupteur marche/arrêt fonctionnel, variateur si présent OK' },
+      { label: 'Tube télescopique / rallonges', hint: 'Aucune fissure, verrouillage des sections correct' },
+      { label: 'Coude / raccord flexible-tube', hint: 'Rotation libre, pas de fuite d\'air' },
+    ]
+  },
+  't-brosses': {
+    title: 'Brosses & Suceurs', icon: '🧹', family: 'traineau',
+    items: [
+      { label: 'Brosse combinée sols durs/tapis', hint: 'Mécanisme de levée poils fonctionnel, usure acceptable' },
+      { label: 'Turbo-brosse (si équipée)', hint: 'Rotation par air correcte, courroie tendue, rouleau propre' },
+      { label: 'Brosse parquet', hint: 'Poils doux intacts, pas de rayure sur semelle' },
+      { label: 'Suceur plat / fentes', hint: 'Aucune fissure, fixation stable' },
+      { label: 'Brosse meuble / tissus', hint: 'Velours ou poils intacts, fixation correcte' },
+      { label: 'Rangement accessoires (si intégré)', hint: 'Clips de maintien fonctionnels, accessoires en place' },
+    ]
+  },
+  't-electrique': {
+    title: 'Système Électrique', icon: '⚡', family: 'traineau',
+    items: [
+      { label: 'Câble secteur', hint: 'Gaine non coupée, pas de fil apparent, longueur suffisante' },
+      { label: 'Fiche secteur', hint: 'Broches intactes, pas de trace de brûlure' },
+      { label: 'Interrupteur principal', hint: 'Réponse franche marche/arrêt, pas de crépitement' },
+      { label: 'Thermostat / sécurité surchauffe', hint: 'Pas de coupure intempestive' },
+      { label: 'Voyant / indicateur marche', hint: 'LED fonctionnelle, visible' },
+    ]
+  },
+  't-roues': {
+    title: 'Roues & Mobilité', icon: '🛞', family: 'traineau',
+    items: [
+      { label: 'Roues avant', hint: 'Rotation libre, roulement non grippé' },
+      { label: 'Roues arrière', hint: 'Rotation libre, caoutchouc non usé' },
+      { label: 'Roulettes pivotantes (si équipées)', hint: 'Pivot 360° sans blocage' },
+      { label: 'Châssis / fixation roues', hint: 'Aucune fissure, roues bien fixées' },
+      { label: 'Patins / protection châssis', hint: 'Présents, pas trop usés' },
+    ]
+  }
+};
+
+// ===== STATE =====
+let currentFamily = 'robot';
+const state = {};
+
+// ===== SWITCH FAMILY =====
+function switchFamily(family, btnEl) {
+  currentFamily = family;
+  // Update buttons
+  document.querySelectorAll('.family-btn').forEach(btn => btn.classList.remove('active'));
+  if (btnEl) {
+    btnEl.classList.add('active');
+  } else if (window.event && window.event.target) {
+    // Fallback compatibilité
+    const t = window.event.target.closest('.family-btn');
+    if (t) t.classList.add('active');
+  }
+  // Hide all families
+  document.getElementById('family-robot').classList.add('hidden');
+  document.getElementById('family-balai').classList.add('hidden');
+  document.getElementById('family-traineau').classList.add('hidden');
+  // Show selected
+  document.getElementById(`family-${family}`).classList.remove('hidden');
+  // Rebuild UI
+  resetAll(true);
+}
+
+// ===== BUILD UI =====
+function buildSections() {
+  // Clear state
+  for (const key in state) delete state[key];
+
+  // Determine family container
+  const familyContainer = document.getElementById(`family-${currentFamily}`);
+  if (!familyContainer) return;
+
+  // Clear ALL existing section DOM nodes for this family
+  // (so deletions / additions reflect immediately)
+  familyContainer.innerHTML = '';
+
+  // Iterate sections in their order in SECTIONS
+  Object.keys(SECTIONS).forEach(sId => {
+    const sData = SECTIONS[sId];
+    if (sData.family !== currentFamily) return;
+
+    // Create section container
+    const section = document.createElement('div');
+    section.className = 'section';
+    section.id = sId;
+    section.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${sId}')">
+        <span class="section-icon">${sData.icon || '📌'}</span>
+        <span class="section-title">${sData.title || sId}</span>
+        <span class="section-count" id="count-${sId}">0/0</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body"></div>
+    `;
+    familyContainer.appendChild(section);
+
+    const body = section.querySelector('.section-body');
+
+    sData.items.forEach((item, idx) => {
+      const key = `${sId}-${idx}`;
+      state[key] = { value: null, note: '' };
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <div class="item-wrap">
+          <div style="display:flex;align-items:flex-start;gap:12px;">
+            <div class="item-left">
+              <div class="item-label">${item.label}</div>
+              <div class="item-hint">${item.hint}</div>
+            </div>
+            <div class="item-actions">
+              <button class="btn-state" id="ok-${key}" onclick="setState('${key}','ok')">✓ OK</button>
+              <button class="btn-state" id="ko-${key}" onclick="setState('${key}','ko')">✗ KO</button>
+              <button class="btn-state" id="na-${key}" onclick="setState('${key}','na')">N/A</button>
+              <span class="item-state-print" id="state-print-${key}"></span>
+            </div>
+          </div>
+          <div class="item-note" id="note-wrap-${key}">
+            <input type="text" placeholder="Remarque / description du défaut…" id="note-${key}" oninput="setNote('${key}',this.value)"/>
+          </div>
+        </div>`;
+      body.appendChild(div);
+    });
+  });
+
+  updateProgress();
+  updateCounts();
+}
+
+function setState(key, val) {
+  state[key].value = state[key].value === val ? null : val;
+  // update buttons
+  ['ok','ko','na'].forEach(v => {
+    const btn = document.getElementById(`${v}-${key}`);
+    if (btn) btn.classList.remove(`active-ok`, `active-ko`, `active-na`);
+  });
+  if (state[key].value) {
+    const btn = document.getElementById(`${state[key].value}-${key}`);
+    if (btn) btn.classList.add(`active-${state[key].value}`);
+  }
+  // update print marker
+  const printEl = document.getElementById(`state-print-${key}`);
+  if (printEl) {
+    printEl.className = 'item-state-print';
+    if (state[key].value) {
+      printEl.classList.add(state[key].value);
+      printEl.textContent =
+        state[key].value === 'ok' ? '✓ OK' :
+        state[key].value === 'ko' ? '✗ KO' : 'N/A';
+    } else {
+      printEl.textContent = '';
+    }
+  }
+  // show note only if KO
+  const noteWrap = document.getElementById(`note-wrap-${key}`);
+  if (noteWrap) {
+    if (state[key].value === 'ko') noteWrap.classList.add('show');
+    else noteWrap.classList.remove('show');
+  }
+  updateProgress();
+  updateCounts();
+}
+
+function setNote(key, val) { state[key].note = val; }
+
+function updateProgress() {
+  const total = Object.keys(state).length;
+  const done = Object.values(state).filter(s => s.value !== null).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${done} / ${total} contrôles effectués (${pct}%)`;
+
+  const ok = Object.values(state).filter(s => s.value === 'ok').length;
+  const ko = Object.values(state).filter(s => s.value === 'ko').length;
+  const na = Object.values(state).filter(s => s.value === 'na').length;
+  document.getElementById('stat-ok').textContent = ok;
+  document.getElementById('stat-ko').textContent = ko;
+  document.getElementById('stat-na').textContent = na;
+
+  const conc = document.getElementById('conclusion');
+  if (done === 0) {
+    conc.className = 'conclusion empty'; conc.textContent = 'Aucun contrôle effectué';
+  } else if (ko > 0) {
+    conc.className = 'conclusion ko'; conc.textContent = `⚠️ ${ko} défaut(s) détecté(s) — intervention requise`;
+  } else if (done < total) {
+    conc.className = 'conclusion partial'; conc.textContent = `🔄 Inspection en cours (${total - done} points restants)`;
+  } else {
+    conc.className = 'conclusion ok'; conc.textContent = '✅ Inspection complète — Aucun défaut visuel détecté';
+  }
+}
+
+function updateCounts() {
+  const sectionsToShow = Object.keys(SECTIONS).filter(k => SECTIONS[k].family === currentFamily);
+
+  sectionsToShow.forEach(sId => {
+    const keys = Object.keys(state).filter(k => k.startsWith(sId + '-'));
+    const done = keys.filter(k => state[k].value !== null).length;
+    const ko = keys.filter(k => state[k].value === 'ko').length;
+    let label = `${done}/${keys.length}`;
+    if (ko > 0) label += ` · ❌ ${ko}`;
+    const countEl = document.getElementById(`count-${sId}`);
+    if (countEl) countEl.textContent = label;
+  });
+}
+
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  if (section) section.classList.toggle('collapsed');
+}
+
+function expandAll() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('collapsed'));
+}
+
+function collapseAll() {
+  document.querySelectorAll('.section').forEach(s => s.classList.add('collapsed'));
+}
+
+function checkAll(val) {
+  for (const key of Object.keys(state)) setState(key, val);
+}
+
+function resetAll(silent = false) {
+  if (!silent && !confirm('Réinitialiser tous les contrôles ?')) return;
+  buildSections();
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  buildSections();
+  // Date default today
+  const today = new Date();
+  document.getElementById('date-input').value = today.toISOString().split('T')[0];
+
+  // Fermeture lightbox par touche Échap
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const lb = document.getElementById('image-lightbox');
+      if (lb && lb.classList.contains('show')) closeLightbox();
+    }
+  });
+});
+// ===== THEME TOGGLE (SAFE & ISOLATED) =====
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('themeToggle');
+  if (!btn) return;
+
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    btn.textContent = '🌙 Mode sombre';
+  }
+
+  btn.addEventListener('click', () => {
+    const isLight =
+      document.documentElement.getAttribute('data-theme') === 'light';
+
+    if (isLight) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'dark');
+      btn.textContent = '☀️ Mode clair';
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+      btn.textContent = '🌙 Mode sombre';
+    }
+  });
+});
+
+
+// ===== PARAMÉTRAGES =====
+
+function openQrManager() {
+
+  const password = prompt('Mot de passe requis :');
+
+  if (password !== 'adminreferentbezons') {
+    alert('Mot de passe incorrect');
+    return;
+  }
+
+  renderQrManager();
+  document.getElementById('qrManager').style.display = 'flex';
+}
+
+function renderQrManager() {
+  const content = document.getElementById('qrManagerContent');
+  content.innerHTML = '';
+
+  // ===== Barre d'actions principales =====
+  const topBar = document.createElement('div');
+  topBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;';
+  topBar.innerHTML = `
+    <div style="flex:1;min-width:200px;color:var(--text-muted);font-size:13px;line-height:1.5;">
+      <strong style="color:var(--text);">ℹ️ Mode édition</strong><br>
+      Ajoutez, modifiez ou supprimez des <strong>groupes (titres)</strong>, des <strong>points de contrôle (sous-titres)</strong> et leurs <strong>commentaires</strong>.
+    </div>
+    <button onclick="addGroup()" style="padding:8px 14px;border:none;border-radius:8px;background:#15803d;color:white;cursor:pointer;font-weight:600;">
+      ➕ Ajouter un groupe (titre)
+    </button>
+  `;
+  content.appendChild(topBar);
+
+  // ===== Filtre par famille =====
+  const families = [
+    { id: 'robot', label: '🤖 Robot aspirateur' },
+    { id: 'balai', label: '🧹 Balai' },
+    { id: 'traineau', label: '🚂 Traîneau' }
+  ];
+
+  families.forEach(fam => {
+    const famHeader = document.createElement('div');
+    famHeader.style.cssText = 'margin:20px 0 10px 0;padding:8px 12px;background:#1e3a8a;color:white;border-radius:8px;font-size:15px;font-weight:700;';
+    famHeader.textContent = fam.label;
+    content.appendChild(famHeader);
+
+    const famSections = Object.keys(SECTIONS).filter(k => SECTIONS[k].family === fam.id);
+
+    if (famSections.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'color:var(--text-muted);font-style:italic;padding:10px;';
+      empty.textContent = 'Aucun groupe pour cette famille.';
+      content.appendChild(empty);
+      return;
+    }
+
+    famSections.forEach(sectionId => {
+      const section = SECTIONS[sectionId];
+
+      const block = document.createElement('div');
+      block.style.cssText = 'margin-bottom:15px;padding:15px;border:1px solid var(--border);border-radius:10px;background:var(--surface);';
+
+      // En-tête du groupe (titre)
+      const title = document.createElement('div');
+      title.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;';
+      title.innerHTML = `
+        <strong style="font-size:16px;color:var(--text);">
+          ${section.icon || '📌'} ${section.title || sectionId}
+          <span style="font-size:11px;color:var(--text-muted);font-weight:normal;">(${sectionId})</span>
+        </strong>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="renameGroup('${sectionId}')" style="padding:6px 10px;border:none;border-radius:6px;background:#1d4ed8;color:white;cursor:pointer;font-size:12px;">
+            ✏️ Renommer titre
+          </button>
+          <button onclick="addItem('${sectionId}')" style="padding:6px 10px;border:none;border-radius:6px;background:#15803d;color:white;cursor:pointer;font-size:12px;">
+            ➕ Ajouter point
+          </button>
+          <button onclick="deleteGroup('${sectionId}')" style="padding:6px 10px;border:none;border-radius:6px;background:#991b1b;color:white;cursor:pointer;font-size:12px;">
+            🗑️ Supprimer groupe
+          </button>
+        </div>
+      `;
+      block.appendChild(title);
+
+      // Liste des points de contrôle
+      if (section.items.length === 0) {
+        const empty = document.createElement('div');
+        empty.style.cssText = 'color:var(--text-muted);font-style:italic;padding:8px;border-top:1px solid var(--border);';
+        empty.textContent = 'Aucun point de contrôle. Cliquez sur « ➕ Ajouter point ».';
+        block.appendChild(empty);
+      } else {
+        section.items.forEach((item, index) => {
+          const line = document.createElement('div');
+          line.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;padding:10px 8px;border-top:1px solid var(--border);gap:10px;flex-wrap:wrap;';
+          line.innerHTML = `
+            <div style="flex:1;min-width:200px;">
+              <div style="font-weight:600;color:var(--text);">${item.label}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">
+                💬 ${item.hint || '<em>(pas de commentaire)</em>'}
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button onclick="renameItem('${sectionId}', ${index})" style="padding:5px 9px;border:none;border-radius:6px;background:#1d4ed8;color:white;cursor:pointer;font-size:11px;">
+                ✏️ Sous-titre
+              </button>
+              <button onclick="editHint('${sectionId}', ${index})" style="padding:5px 9px;border:none;border-radius:6px;background:#7c3aed;color:white;cursor:pointer;font-size:11px;">
+                📝 Commentaire
+              </button>
+              <button onclick="deleteItem('${sectionId}', ${index})" style="padding:5px 9px;border:none;border-radius:6px;background:#991b1b;color:white;cursor:pointer;font-size:11px;">
+                🗑️ Supprimer
+              </button>
+            </div>
+          `;
+          block.appendChild(line);
+        });
+      }
+
+      content.appendChild(block);
+    });
+  });
+}
+
+function closeQrManager() {
+  document.getElementById('qrManager').style.display = 'none';
+}
+
+// ===== ACTIONS SUR LES POINTS DE CONTRÔLE =====
+
+function renameItem(sectionId, index) {
+  const item = SECTIONS[sectionId].items[index];
+  const newName = prompt('Nouveau sous-titre du point de contrôle :', item.label);
+  if (newName === null) return;
+  if (!newName.trim()) { alert('Le sous-titre ne peut pas être vide.'); return; }
+  item.label = newName.trim();
+  buildSections();
+  renderQrManager();
+}
+
+function editHint(sectionId, index) {
+  const item = SECTIONS[sectionId].items[index];
+  const newHint = prompt('Nouveau commentaire / description :', item.hint || '');
+  if (newHint === null) return;
+  item.hint = newHint.trim();
+  buildSections();
+  renderQrManager();
+}
+
+function deleteItem(sectionId, index) {
+  const item = SECTIONS[sectionId].items[index];
+  if (!confirm(`Supprimer le point de contrôle :\n« ${item.label} » ?`)) return;
+  SECTIONS[sectionId].items.splice(index, 1);
+  buildSections();
+  renderQrManager();
+}
+
+function addItem(sectionId) {
+  const label = prompt('Sous-titre du nouveau point de contrôle :');
+  if (label === null) return;
+  if (!label.trim()) { alert('Le sous-titre ne peut pas être vide.'); return; }
+  const hint = prompt('Commentaire / description (optionnel) :', '');
+  if (hint === null) return;
+  SECTIONS[sectionId].items.push({ label: label.trim(), hint: hint.trim() });
+  buildSections();
+  renderQrManager();
+}
+
+// ===== ACTIONS SUR LES GROUPES =====
+
+function renameGroup(sectionId) {
+  const section = SECTIONS[sectionId];
+  const newTitle = prompt('Nouveau titre du groupe :', section.title || sectionId);
+  if (newTitle === null) return;
+  if (!newTitle.trim()) { alert('Le titre ne peut pas être vide.'); return; }
+  section.title = newTitle.trim();
+  const newIcon = prompt('Icône (emoji, laisser tel quel pour ne pas changer) :', section.icon || '📌');
+  if (newIcon !== null && newIcon.trim()) section.icon = newIcon.trim();
+  buildSections();
+  renderQrManager();
+}
+
+function deleteGroup(sectionId) {
+  const section = SECTIONS[sectionId];
+  if (!confirm(`Supprimer le groupe « ${section.title || sectionId} » et ses ${section.items.length} point(s) ?`)) return;
+  delete SECTIONS[sectionId];
+  buildSections();
+  renderQrManager();
+}
+
+function addGroup() {
+  const familyChoice = prompt('Famille du nouveau groupe :\n- robot\n- balai\n- traineau');
+  if (familyChoice === null) return;
+  const family = familyChoice.trim().toLowerCase();
+  if (!['robot', 'balai', 'traineau'].includes(family)) {
+    alert('Famille invalide. Choisir : robot, balai ou traineau.');
+    return;
+  }
+  const title = prompt('Titre du nouveau groupe :');
+  if (title === null) return;
+  if (!title.trim()) { alert('Le titre ne peut pas être vide.'); return; }
+  const icon = prompt('Icône (emoji) :', '📌');
+  if (icon === null) return;
+
+  // Générer un ID unique
+  const prefix = family === 'robot' ? 's-' : family === 'balai' ? 'b-' : 't-';
+  const base = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 20) || 'groupe';
+  let sectionId = prefix + base;
+  let suffix = 1;
+  while (SECTIONS[sectionId]) {
+    sectionId = prefix + base + '-' + (++suffix);
+  }
+
+  SECTIONS[sectionId] = {
+    title: title.trim(),
+    icon: icon.trim() || '📌',
+    family: family,
+    items: []
+  };
+
+  buildSections();
+  renderQrManager();
+}
+// ===== EXPORT HTML =====
+// Sérialise SECTIONS proprement en JS (gestion guillemets/échappements)
+function _serializeSections() {
+  return JSON.stringify(SECTIONS, null, 2);
+}
+
+function exportHTML() {
+  try {
+    // 1. Clone du document complet
+    const docClone = document.documentElement.cloneNode(true);
+
+    // 2. Nettoyer l'UI volatile : remettre tous les boutons d'état à neutre,
+    //    vider les remarques, masquer la modale Paramétrages, replier l'état.
+    //    => Pour rester simple, on retire les classes active-* et on vide les inputs note.
+    docClone.querySelectorAll('.btn-state').forEach(b => {
+      b.classList.remove('active-ok', 'active-ko', 'active-na');
+    });
+    docClone.querySelectorAll('input[id^="note-"]').forEach(i => { i.value = ''; });
+    docClone.querySelectorAll('.item-note').forEach(n => n.classList.remove('show'));
+
+    // 3. Cacher la modale paramétrages dans le clone
+    const qrModal = docClone.querySelector('#qrManager');
+    if (qrModal) qrModal.style.display = 'none';
+
+    // 4. Vider le contenu dynamique des familles : à l'ouverture du fichier exporté,
+    //    buildSections() reconstruira tout à partir de SECTIONS (qui sera à jour).
+    ['family-robot', 'family-balai', 'family-traineau'].forEach(id => {
+      const el = docClone.querySelector('#' + id);
+      if (el) el.innerHTML = '';
+    });
+
+    // 5. Reconstruire le HTML en remplaçant la définition de SECTIONS par la version courante
+    let html = '<!DOCTYPE html>\n' + docClone.outerHTML;
+
+    const sectionsJson = _serializeSections();
+    // Regex : capture `const SECTIONS = { ... };` (multi-ligne, non-greedy jusqu'à `\n};`)
+    const re = /const\s+SECTIONS\s*=\s*\{[\s\S]*?\n\};/;
+    if (re.test(html)) {
+      html = html.replace(re, 'const SECTIONS = ' + sectionsJson + ';');
+    } else {
+      alert('⚠️ Attention : la définition de SECTIONS n\'a pas pu être localisée dans le code. L\'export utilisera la copie DOM telle quelle (les modifications peuvent ne pas être conservées).');
+    }
+
+    // 6. Téléchargement
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const stamp = new Date().toISOString().slice(0, 10);
+    link.download = `CheckBot_V5_${stamp}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+
+    alert('✅ Export HTML terminé.\nLe fichier est autonome : vous pouvez l\'ouvrir sur un autre PC, toutes les modifications sont conservées.');
+  } catch (e) {
+    console.error(e);
+    alert('❌ Erreur lors de l\'export : ' + e.message);
+  }
+}
+
+// ===== UPLOAD IMAGE DIAGNOSTIC =====
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Validation
+  if (!file.type.startsWith('image/')) {
+    alert('❌ Veuillez sélectionner un fichier image (JPG, PNG, WebP...).');
+    event.target.value = '';
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('❌ Image trop volumineuse (max 10 Mo).');
+    event.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = document.getElementById('image-thumb');
+    const wrap = document.getElementById('image-thumb-wrap');
+    const info = document.getElementById('image-info');
+
+    img.src = e.target.result;
+    wrap.classList.add('has-image');
+
+    // Info file
+    const sizeKb = Math.round(file.size / 1024);
+    const sizeStr = sizeKb > 1024 ? (sizeKb / 1024).toFixed(2) + ' Mo' : sizeKb + ' Ko';
+    info.textContent = `📎 ${file.name} · ${sizeStr}`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage() {
+  if (!confirm('Retirer l\'image du diagnostic ?')) return;
+  const img = document.getElementById('image-thumb');
+  const wrap = document.getElementById('image-thumb-wrap');
+  const info = document.getElementById('image-info');
+  const input = document.getElementById('image-input');
+  img.src = '';
+  wrap.classList.remove('has-image');
+  info.textContent = 'Aucune image — formats JPG, PNG, WebP (max ~10 Mo)';
+  input.value = '';
+}
+
+function openLightbox() {
+  const thumb = document.getElementById('image-thumb');
+  if (!thumb.src) return;
+  document.getElementById('lightbox-img').src = thumb.src;
+  document.getElementById('image-lightbox').classList.add('show');
+}
+
+function closeLightbox() {
+  document.getElementById('image-lightbox').classList.remove('show');
+}
+
+// ===== BACK TO TOP =====
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+  if (window.scrollY > 400) {
+    btn.classList.add('show');
+  } else {
+    btn.classList.remove('show');
+  }
+}, { passive: true });
+
+// ===== EXPORT TO NOMAD =====
+// Génère un PDF (via la fonction print du navigateur), tente d'enregistrer dans
+// "Bureau/Rapport Diagnostic/" via la File System Access API si supportée,
+// et ouvre Nomad en parallèle.
+async function exportToNomad() {
+  const NOMAD_URL = 'https://nomad.intranet.darty.fr/';
+
+  // Construction du nom de fichier
+  const model = (document.getElementById('model-input').value || 'sans-modele').trim();
+  const serial = (document.getElementById('serial-input').value || 'sn').trim();
+  const dateVal = document.getElementById('date-input').value || new Date().toISOString().slice(0, 10);
+  const safe = s => s.replace(/[^a-zA-Z0-9_-]+/g, '_').slice(0, 40);
+  const stamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
+  const baseName = `Rapport_Diagnostic_${safe(model)}_${safe(serial)}_${dateVal}_${stamp}`;
+
+  // Ouverture Nomad immédiatement (dans un nouvel onglet pour ne pas perdre les saisies)
+  const nomadWin = window.open(NOMAD_URL, '_blank', 'noopener,noreferrer');
+  if (!nomadWin) {
+    alert('⚠️ Impossible d\'ouvrir Nomad. Vérifiez que les pop-ups ne sont pas bloquées pour cette page.');
+  }
+
+  // Tentative File System Access API (Chrome, Edge, Opera récents)
+  // → permet de choisir UNE fois un dossier puis d'y écrire les PDF
+  const hasFsApi = 'showDirectoryPicker' in window;
+
+  if (hasFsApi) {
+    try {
+      // Demande à l'utilisateur de pointer vers le Bureau (ou son emplacement préféré)
+      // On mémorise le handle en IndexedDB pour ne le demander qu'une fois par session.
+      let parentDir = await _getStoredDirHandle();
+      if (!parentDir) {
+        const ok = confirm(
+          'Première utilisation : sélectionnez le dossier "Bureau" (ou un autre emplacement).\n\n' +
+          'Le dossier "Rapport Diagnostic" y sera créé automatiquement.\n\n' +
+          'Cliquez OK pour continuer.'
+        );
+        if (!ok) {
+          // Fallback téléchargement classique
+          await _fallbackPrintPdf(baseName);
+          return;
+        }
+        parentDir = await window.showDirectoryPicker({
+          mode: 'readwrite',
+          startIn: 'desktop'
+        });
+        await _storeDirHandle(parentDir);
+      }
+
+      // Vérifier/redemander la permission
+      const perm = await parentDir.queryPermission({ mode: 'readwrite' });
+      if (perm !== 'granted') {
+        const req = await parentDir.requestPermission({ mode: 'readwrite' });
+        if (req !== 'granted') {
+          alert('⚠️ Permission refusée. Le PDF sera téléchargé normalement.');
+          await _fallbackPrintPdf(baseName);
+          return;
+        }
+      }
+
+      // Créer (ou retrouver) le sous-dossier "Rapport Diagnostic"
+      const reportDir = await parentDir.getDirectoryHandle('Rapport Diagnostic', { create: true });
+
+      // Générer le PDF côté client : on utilise window.print() qui propose
+      // "Enregistrer au format PDF" dans la boîte de dialogue navigateur.
+      // → Limite navigateur : impossible de capturer ce PDF en bytes directement.
+      // → Solution : on construit un PDF minimaliste avec jsPDF en CDN ? Non, CDN bloqué dans intranet.
+      // → Solution retenue : on génère un HTML autoportant nommé .html dans le dossier
+      //                       + on lance window.print() pour que l'utilisateur valide "Sauvegarder en PDF".
+      //   L'utilisateur choisira le même dossier "Rapport Diagnostic" lors de l'enregistrement PDF natif.
+
+      // Sauvegarde HTML snapshot complet (sécurité : trace + ouverture future)
+      const htmlSnapshot = _buildHtmlSnapshot();
+      const htmlHandle = await reportDir.getFileHandle(baseName + '.html', { create: true });
+      const writable = await htmlHandle.createWritable();
+      await writable.write(new Blob([htmlSnapshot], { type: 'text/html;charset=utf-8' }));
+      await writable.close();
+
+      // Pré-renseigner le nom de fichier suggéré pour le print PDF
+      const oldTitle = document.title;
+      document.title = baseName;
+
+      alert(
+        '📄 Rapport enregistré : "Rapport Diagnostic/' + baseName + '.html"\n\n' +
+        '➡️ La boîte d\'impression va s\'ouvrir.\n' +
+        'Choisissez "Enregistrer au format PDF" et sauvegardez dans le même dossier "Rapport Diagnostic" sur votre bureau.\n\n' +
+        'Nomad a été ouvert dans un onglet séparé.'
+      );
+
+      setTimeout(() => {
+        window.print();
+        document.title = oldTitle;
+      }, 300);
+
+      return;
+    } catch (err) {
+      // L'utilisateur a annulé ou erreur d'accès → fallback
+      console.warn('FS Access API indisponible/refusée :', err);
+      await _fallbackPrintPdf(baseName);
+      return;
+    }
+  }
+
+  // Aucun support FS API → fallback
+  await _fallbackPrintPdf(baseName);
+}
+
+function _fallbackPrintPdf(baseName) {
+  alert(
+    '⚠️ Votre navigateur ne permet pas l\'écriture directe sur le bureau.\n\n' +
+    'La boîte d\'impression va s\'ouvrir :\n' +
+    '➡️ Choisissez "Enregistrer au format PDF"\n' +
+    '➡️ Enregistrez le fichier dans un dossier "Rapport Diagnostic" sur votre Bureau\n' +
+    '   (créez-le manuellement la première fois)\n\n' +
+    'Nomad est ouvert en parallèle.\n\n' +
+    'Astuce : utilisez Chrome ou Edge pour bénéficier de la sauvegarde automatique.'
+  );
+  const oldTitle = document.title;
+  document.title = baseName;
+  setTimeout(() => {
+    window.print();
+    document.title = oldTitle;
+  }, 300);
+}
+
+// Construit un snapshot HTML autoportant (utile pour archivage avec l'image)
+function _buildHtmlSnapshot() {
+  const docClone = document.documentElement.cloneNode(true);
+
+  // Cacher modale et back-to-top
+  const qrModal = docClone.querySelector('#qrManager');
+  if (qrModal) qrModal.style.display = 'none';
+  const btt = docClone.querySelector('#backToTop');
+  if (btt) btt.style.display = 'none';
+
+  // Conserver l'image (le src est déjà en dataURL si uploadée)
+  // mais ne pas conserver les valeurs des inputs file
+  docClone.querySelectorAll('input[type="file"]').forEach(i => i.value = '');
+
+  return '<!DOCTYPE html>\n' + docClone.outerHTML;
+}
+
+// ===== STOCKAGE DU DIRECTORY HANDLE (IndexedDB) =====
+const _IDB_NAME = 'checkbot-fs';
+const _IDB_STORE = 'handles';
+const _IDB_KEY = 'reportParentDir';
+
+function _openIdb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(_IDB_NAME, 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(_IDB_STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function _getStoredDirHandle() {
+  try {
+    const db = await _openIdb();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(_IDB_STORE, 'readonly');
+      const store = tx.objectStore(_IDB_STORE);
+      const req = store.get(_IDB_KEY);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) {
+    console.warn('IDB read fail:', e);
+    return null;
+  }
+}
+
+async function _storeDirHandle(handle) {
+  try {
+    const db = await _openIdb();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction(_IDB_STORE, 'readwrite');
+      const store = tx.objectStore(_IDB_STORE);
+      const req = store.put(handle, _IDB_KEY);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) {
+    console.warn('IDB write fail:', e);
+    return false;
+  }
+}
+</script>
+</body>
+</html>
